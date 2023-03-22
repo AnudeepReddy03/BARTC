@@ -87,6 +87,7 @@ function App() {
   // };
 
   return (
+    <Router>
     <div>
       <nav className="navbar">
         <div className="container">
@@ -96,7 +97,8 @@ function App() {
           <div className="navbar-menu">
 
               <div className="navbar-item">
-                <button
+                <ul>
+                <li><button
                   className="button is-white connect-wallet"
                   onClick={connectWallet}
                 >
@@ -105,57 +107,31 @@ function App() {
                       ? `Connected: ${walletAddress.substring(0, 6)}...${walletAddress.substring(38)}`
                       : "Connect Wallet"}
                   </span>
-                </button>
-                &nbsp;&nbsp;
-                <button
-                  className="button is-white connect-wallet"
-                  // onClick={()=>navigate("/login")}
-                >
-                  <span className="has-text-weight-bold">
-                   Login
-                  </span>
-                </button>
-                &nbsp;&nbsp;
-                <button
-                  className="button is-white connect-wallet"
-                  // onClick={()=>navigate("/signup")}
-                >
-                  <span className="has-text-weight-bold">
-                   SignUp
-                  </span>
-                </button>
-                &nbsp;&nbsp;
-                <button
+                </button></li>
+                <li><Link to="/login" className="nav-item nav-link btn btn-dark">Login</Link></li>
+                <li><Link to="/signup" className="nav-item nav-link btn btn-dark">Sign up</Link></li>
+                <li><button
                   className="button is-white connect-wallet"
                   // onClick={}
                 >
                   <span className="has-text-weight-bold">
                    My Arts
                   </span>
-                </button>
-                {/* <div className="nav-item float-end">
-                 <div className="collapse navbar-collapse">
-                 </div>
-                </div> */}
+                </button></li>
+                </ul>.
             </div>
           </div>
         </div>
       </nav>
       <div className="App">
-        <Router>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/" element={<Home />} />
           </Routes>
-            <ul className="navbar-nav">
-            <li><h5><Link to="/" className="nav-item nav-link btn btn-dark">Home</Link></h5></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <li><h5><Link to="/home" className="nav-item nav-link btn btn-dark">Login</Link></h5></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <li><h5><Link to="/signup" className="nav-item nav-link btn btn-dark">Sign up</Link></h5></li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          </ul>
-          </Router>
       </div>
     </div>
+    </Router>
   );
 }
 
