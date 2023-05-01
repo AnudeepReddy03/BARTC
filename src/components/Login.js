@@ -21,7 +21,7 @@ function Login() {
       setErrorMsg("Fill all fields");
       return;
     }
-    setErrorMsg("Incorrect Credentials");
+    setErrorMsg("");
 
     setSubmitButtonDisabled(true);
     signInWithEmailAndPassword(auth, values.email, values.pass)
@@ -32,7 +32,7 @@ function Login() {
       })
       .catch((err) => {
         setSubmitButtonDisabled(false);
-        setErrorMsg("Incorrect Credentials");
+        setErrorMsg("");
       });
   };
   return (

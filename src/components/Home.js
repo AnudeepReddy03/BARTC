@@ -1,23 +1,47 @@
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import styles from "./Home.module.css";
 import firebase from 'firebase/compat/app';
+import 'firebase/storage';
 import Block from '../Contract/artifacts/contracts/Block.sol/Block.json';
 import Web3 from 'web3/dist/web3.min.js';
 import 'firebase/compat/database';
-function App(){
+import {db,storage,auth} from '../firebase'; 
+import {uploadBytes,ref,getDownloadURL} from 'firebase/storage';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
+function App(props){
   const [file,setFile]=useState();
   const [image, setImage] = useState(null);
   const [hash, setHash] = useState(null);
   const [disabled,setdisabled] = useState(true);
   const { ethereum } = window;
-
-  const handleImageChange = (e) => {
+  const [walletAddress, setWalletAddress] = useState("");
+  const [presentUser,setPresentUser]=useState(null);
+  // const navigate = useNavigate();
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setPresentUser({
+          uid: user.uid,
+          email: user.email,
+        });
+      } else {
+        setPresentUser(null);
+      }
+    });
+  }, [walletAddress]);
+  // const delay = ms => new Promise(
+  //   resolve => setTimeout(resolve, ms)
+  // );
+  const handleImageChange = async(e) => {
     setFile(URL.createObjectURL(e.target.files[0]));
     setImage(e.target.files[0]);
+    // await delay(5000);
+    handleUpload(e.target.files[0]);
   };
-  const handleUpload = () => {
+  const handleUpload = (file) => {
     const reader = new FileReader();
-    reader.readAsArrayBuffer(image);
+    reader.readAsArrayBuffer(file);
     // console.log(image);
     reader.onloadend = () => {
       const imageData = new Uint8Array(reader.result);
@@ -33,12 +57,13 @@ function App(){
         const finval = hexCodes.join(''); 
         setHash(finval);
         // console.log(typeof finval);
-        checkIfImageExists(finval);
+        checkIfImageExists(file,finval);
     });
   };
 };
-  const checkIfImageExists = (finval) => {
+  const checkIfImageExists = (file,finval) => {
     const databaseRef = firebase.database().ref('images');
+    const db = firebase.storage();
     databaseRef.once('value') 
     .then((snapshot) => {
       const images = snapshot.val();
@@ -55,13 +80,32 @@ function App(){
       // console.log(finval);
       databaseRef.push({ hash: finval});
       // console.log(image.lastModifiedDate.toString());
-      setdisabled(false);
+
       alert("Successfully Verified");
+      fbupload(file);
+      setdisabled(false);
     })
     .catch((error) => 
     {
       console.error(error);
     });
+  };
+  const fbupload = async(file)=>
+  {
+    const accounts = await window.ethereum.request({ method: "eth_accounts" });
+    const iid = accounts[0];
+    const userId = presentUser.uid;
+    const storageRef = ref(storage, `images/${userId}/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+    const imageRef = await addDoc(collection(db, "images"), {
+      uid: userId,
+      pid: iid,
+      fileName: file.name,
+      downloadURL,
+      createdAt: serverTimestamp()
+    });
+    console.log("Image uploaded successfully with ID: ", imageRef.id);
   };
   async function FinalUpload()
   {
@@ -129,8 +173,8 @@ function App(){
               <h3 align="center">Upload Your Image</h3>
               <input type="file" align={"center"} accept="image/png, image/jpeg, image/jpg" onChange={handleImageChange} />
               <img src = {file} alt=""/>
-            <button onClick={handleUpload}>Verify </button>
-            <button disabled={disabled} onClick={FinalUpload}>Upload</button>
+            {/* <button onClick={handleUpload}>Verify </button> */}
+            <button disabled={disabled} onClick={FinalUpload}>Copyright</button>
         </div>
         </div>
         </div>
