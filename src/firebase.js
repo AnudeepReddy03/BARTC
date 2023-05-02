@@ -8,13 +8,7 @@ import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDtTZWbb2oMLK5QWQgyMtWuqUdEsT_KxF4",
-  authDomain: "art-1-b5d07.firebaseapp.com",
-  databaseURL: "https://art-1-b5d07-default-rtdb.firebaseio.com",
-  projectId: "art-1-b5d07",
-  storageBucket: "art-1-b5d07.appspot.com",
-  messagingSenderId: "450959061279",
-  appId: "1:450959061279:web:bc4e5dc086dbe5e6b2c02a"
+  
 };
 
 firebase.initializeApp(firebaseConfig);
