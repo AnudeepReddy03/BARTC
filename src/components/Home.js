@@ -9,11 +9,12 @@ import {db,storage,auth} from '../firebase';
 import {uploadBytes,ref,getDownloadURL} from 'firebase/storage';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-function App(props){
-  const [file,setFile]=useState();
+let file1 = null;
+let cid1 = null;
+let hashval = null;
+function App(){
+  const [file, setFile] = useState(null);
   const [image, setImage] = useState(null);
-  const [hash, setHash] = useState(null);
-  const [disabled,setdisabled] = useState(true);
   const { ethereum } = window;
   const [walletAddress, setWalletAddress] = useState("");
   const [presentUser,setPresentUser]=useState(null);
@@ -34,9 +35,10 @@ function App(props){
   //   resolve => setTimeout(resolve, ms)
   // );
   const handleImageChange = async(e) => {
-    setFile(URL.createObjectURL(e.target.files[0]));
-    setImage(e.target.files[0]);
+    setImage(URL.createObjectURL(e.target.files[0]));
+    setFile(e.target.files[0]);
     // await delay(5000);
+    file1 = e.target.files[0];
     handleUpload(e.target.files[0]);
   };
   const handleUpload = (file) => {
@@ -55,15 +57,15 @@ function App(props){
           hexCodes.push(hex.padStart(8, '0'));
         }
         const finval = hexCodes.join(''); 
-        setHash(finval);
         // console.log(typeof finval);
+        hashval = finval;
         checkIfImageExists(file,finval);
     });
   };
 };
   const checkIfImageExists = (file,finval) => {
     const databaseRef = firebase.database().ref('images');
-    const db = firebase.storage();
+    // console.log(file);
     databaseRef.once('value') 
     .then((snapshot) => {
       const images = snapshot.val();
@@ -78,38 +80,35 @@ function App(props){
         }
       }
       // console.log(finval);
-      databaseRef.push({ hash: finval});
-      // console.log(image.lastModifiedDate.toString());
-
+      // databaseRef.push({hash: finval});
       alert("Successfully Verified");
-      fbupload(file);
-      setdisabled(false);
+      FinalUpload();
     })
     .catch((error) => 
     {
       console.error(error);
     });
   };
-  const fbupload = async(file)=>
+  const fbupload = async(file1)=>
   {
     const accounts = await window.ethereum.request({ method: "eth_accounts" });
     const iid = accounts[0];
     const userId = presentUser.uid;
-    const storageRef = ref(storage, `images/${userId}/${file.name}`);
-    await uploadBytes(storageRef, file);
+    const storageRef = ref(storage, `images/${userId}/${file1.name}`);
+    await uploadBytes(storageRef, file1);
     const downloadURL = await getDownloadURL(storageRef);
     const imageRef = await addDoc(collection(db, "images"), {
       uid: userId,
       pid: iid,
-      fileName: file.name,
+      fileName: file1.name,
       downloadURL,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
+      ipfs : `ipfs.io/ipfs/${cid1}`
     });
     console.log("Image uploaded successfully with ID: ", imageRef.id);
   };
   async function FinalUpload()
   {
-    
     const contractAddress = "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318";
     const abi = Block.abi;
     // const contract = new Contract(contractAddress, abi, provider);
@@ -127,7 +126,6 @@ function App(props){
       console.log(result.transactionHash);
       if(result.transactionHash!=null)
         alert('Transaction Successfully Completed!');
-      setdisabled(true);
       
       const fhash = result.transactionHash;
       IPFSupload(fhash);
@@ -154,12 +152,17 @@ function App(props){
         }
         const { cid } = await response.json();
         fin = cid;
+        cid1 = cid;
         console.log(`Data uploaded to ${cid}!`);
       }
       catch (error) {
         console.error(error);
       }
+      fbupload(file1);
+      const databaseRef = firebase.database().ref('images');
+      databaseRef.push({hash:hashval});
       alert(`ipfs.io/ipfs/${fin}`);
+      
     }
     
   }
@@ -169,12 +172,9 @@ function App(props){
       <div className={styles.container}>
       <div className={styles.innerBox}>
           <h1>Copyright Your Image</h1>
-              {/* <label htmlFor="imgs">Upload Your Image</label> */}
               <h3 align="center">Upload Your Image</h3>
               <input type="file" align={"center"} accept="image/png, image/jpeg, image/jpg" onChange={handleImageChange} />
-              <img src = {file} alt=""/>
-            {/* <button onClick={handleUpload}>Verify </button> */}
-            <button disabled={disabled} onClick={FinalUpload}>Copyright</button>
+              <img src = {image} alt="" style={{ display: "block", margin: "0 auto", width: "300px", height: "auto" }}></img>
         </div>
         </div>
         </div>

@@ -34,7 +34,7 @@ function MyArts(props) {
           const downloadURL = await getDownloadURL(
             ref(storage, doc.data().downloadURL)
           );
-          return { id: doc.id, downloadURL: downloadURL, createdAt: doc.data().createdAt,pid: doc.data().pid, };
+          return { id: doc.id, downloadURL: downloadURL, createdAt: doc.data().createdAt,pid: doc.data().pid, ipfs: doc.data().ipfs };
         })
       );
 
@@ -67,6 +67,7 @@ function MyArts(props) {
           <th style={{ border: "1px solid black", padding: "5px" }}>Image</th>
             <th style={{ border: "1px solid black", padding: "5px" }}>Created At</th>
             <th style={{ border: "1px solid black", padding: "5px" }}>Public ID</th>
+            <th style={{ border: "1px solid black", padding: "5px" }}>IPFS</th>
           </tr>
         </thead>
         <tbody>
@@ -77,6 +78,7 @@ function MyArts(props) {
               </td>
               <td style={{ border: "1px solid black", padding: "5px" }}>{image.createdAt.toDate().toLocaleString()}</td>
               <td style={{ border: "1px solid black", padding: "5px" }}>{image.pid}</td>
+              <td style={{ border: "1px solid black", padding: "5px" }}>{image.ipfs}</td>
             </tr>
           ))}
         </tbody>
