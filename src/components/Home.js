@@ -109,7 +109,7 @@ function App(){
   };
   async function FinalUpload()
   {
-    const contractAddress = "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318";
+    const contractAddress = "";
     const abi = Block.abi;
     // const contract = new Contract(contractAddress, abi, provider);
     if(window.ethereum){
@@ -132,7 +132,7 @@ function App(){
     }
     async function IPFSupload(fhash)
     {
-      const client = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDU2QmU0YkI0RjliNzA0MzYxN0RjMjViODNBNUIyMzI0QTZhNEYzQ2EiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NzY2MTEzMzc3MDUsIm5hbWUiOiJCQVJUQyJ9.wpkDw65bU0UTh5iAY0Isgrs1dvqcXynoTVXQlGLLfR0";
+      const client = "";
       const data =  fhash;
       const headers = {
         Authorization: `Bearer ${client}`,
